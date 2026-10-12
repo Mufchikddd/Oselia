@@ -415,7 +415,7 @@ body.so #objects .glass{-webkit-backdrop-filter:none;backdrop-filter:none}
 @media(max-width:980px){.rc.wide{grid-column:1/-1;flex-wrap:wrap}}
 @media(max-width:640px){.rc.wide{flex-direction:column;align-items:flex-start;gap:24px;padding:22px}}
 /* footer CTA */
-.cf{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;color:#fff;overflow:hidden;background-color:#0a0f18;background-image:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.7) 60%,rgba(0,0,0,.9) 100%),url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80');background-size:cover;background-position:center;background-attachment:fixed;padding:5.5rem 0 1rem}
+.cf{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;color:#fff;overflow:hidden;background-color:#0a0f18;isolation:isolate;padding:5.5rem 0 1rem}
 @media(pointer:coarse){.cf{background-attachment:scroll}}
 .cf .cta-content{text-align:center;max-width:800px;margin:0 auto;padding:0 2rem}
 .cf .cta-content h2{font-size:clamp(2.2rem,min(5vw,7.5vh),4.5rem);font-weight:500;line-height:1.1;margin-bottom:1.5rem;letter-spacing:-1px;max-width:none}
@@ -542,6 +542,10 @@ body.cat #catalog{animation:pgin .55s cubic-bezier(.2,.7,.2,1) both}
 .lg-body{touch-action:pan-y}
 }
 @media(max-width:768px){.cf .cta-content{margin-bottom:2.75rem}}
+/* footer video background */
+.cf .cf-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:0;transition:opacity 1.2s ease}
+.cf .cf-bg.on{opacity:1}
+.cf::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.7) 60%,rgba(0,0,0,.9) 100%)}
 </style>
 </head>
 <body>
@@ -713,6 +717,7 @@ body.cat #catalog{animation:pgin .55s cubic-bezier(.2,.7,.2,1) both}
 </div></main>
 
 <section class="cf" id="contact">
+  <video class="cf-bg" muted loop playsinline preload="none" aria-hidden="true" data-src="https://res.cloudinary.com/n1lllqzs/video/upload/v1791825104/Drone_filming_luxury_residential__1080p_20261012182329.mp4"></video>
   <div class="cta-content">
     <h2>Знайдемо Дім<br>Вашої Мрії</h2>
     <p>Чи готові ви перетворити мрію про ідеальне житло в реальність? Наше агентство нерухомості тут, щоб допомогти. Почнімо шлях до вашої нової оселі вже сьогодні.</p>
@@ -1049,6 +1054,16 @@ if(e.key==='Escape'){close();return}
 if(e.key==='Tab'){var q=L.querySelectorAll('button'),f=q[0],z=q[q.length-1];
 if(e.shiftKey&&document.activeElement===f){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();f.focus()}}});
 })();
+(function(){
+var v=document.querySelector('.cf-bg');if(!v)return;
+var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches,loaded=false;
+function load(){if(loaded)return;loaded=true;v.src=v.dataset.src;v.addEventListener('loadeddata',function(){v.classList.add('on')},{once:true});v.load()}
+if(!('IntersectionObserver' in window)){load();if(!rm)v.play().catch(function(){});return}
+new IntersectionObserver(function(en){en.forEach(function(e){
+if(e.isIntersecting){load();if(!rm){var p=v.play();if(p&&p.catch)p.catch(function(){})}}else if(loaded){v.pause()}
+})},{rootMargin:'300px 0px'}).observe(v.parentNode);
+})();
 </script>
 </body>
 </html>
+
